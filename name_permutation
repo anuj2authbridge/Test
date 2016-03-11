@@ -1,0 +1,36 @@
+	function pc_permute2($items, $perms = array(),&$collect) {
+    if (empty($items)) { 
+		$collect[] = array('Fname'=>$perms[0], 'Mname'=>$perms[1]);
+    } else {
+        for ($i = count($items) - 1; $i >= 0; --$i) {
+             $newitems = $items;
+             $newperms = $perms;
+             list($foo) = array_splice($newitems, $i, 1);
+             array_unshift($newperms, $foo);
+             pc_permute2($newitems, $newperms,$collect);
+         }
+    }
+}
+
+
+	function pc_permute3($items, $perms = array(),&$collect) {
+    if (empty($items)) { 
+ 		$collect[] = array('Fname'=>$perms[0], 'Mname'=>$perms[1], 'Lname'=>$perms[2]);
+    } else {
+        for ($i = count($items) - 1; $i >= 0; --$i) {
+             $newitems = $items;
+             $newperms = $perms;
+             list($foo) = array_splice($newitems, $i, 1);
+             array_unshift($newperms, $foo);
+             pc_permute3($newitems, $newperms,$collect);
+         }
+    }
+}
+
+
+pc_permute2(array('anuj', 'mishra','a','m'),array(),$collect);
+
+//pc_permute3(array('anuj', 'mishra','a','m'),array(),$collect);
+
+echo "<pre>";
+print_r($collect);
