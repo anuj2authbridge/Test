@@ -6,7 +6,15 @@ use Cake\Validation\Validator;
 
 class UsersTable extends Table
 {
-
+public function beforeFilter(Event $event)
+    {
+	parent::initialize($config);
+        $this->table('users');
+        $this->primaryKey('UID');
+        $this->Auth->allow(['regisstration']);
+    }
+	
+	
     public function validationDefault(Validator $validator)
     {
         return $validator
@@ -24,9 +32,6 @@ class UsersTable extends Table
             ->notEmpty('tnc', 'You must accept our terms of service');
 
     }
-    public function beforeFilter(Event $event)
-    {
-        $this->Auth->allow(['login', 'regisstration']);
-    }	
+    	
 
 }
