@@ -15,6 +15,7 @@
 namespace App\Controller;
 
 use Cake\Controller\Controller;
+use Cake\Core\Configure;
 use Cake\Event\Event;
 /**
  * Application Controller
@@ -36,34 +37,57 @@ class AppController extends Controller
      */
     public function initialize()
     {
-        parent::initialize();
-        $this->loadComponent('Flash');
-        $this->loadComponent('Auth', array(
-    'authenticate' => array(
-        'Form' => array(
-            'fields' => array(
-                'username' => 'email',
-                'password' => 'password'
-                 )
-        )
-    ),
-    'loginAction' => array(
-        'controller' => 'Users',
-        'action' => 'login'
-    )
-));
-    
- //       'authError' => 'Did you really think you are allowed to see that?',
-/*         'authenticate' => [
-            'Form' => [
-                'fields' => ['username' => 'email']
-            ]			
-        ] 
-		]);*/
-		
+        
+	$this->loadComponent('Flash');
+        $this->loadComponent('RequestHandler');
+        $this->loadComponent('Paginator');
+        $this->loadComponent('Auth', [
+            'loginRedirect' => [
+                'controller' => 'Dashboards',
+                'action' => 'index'
+            ],
+            'logoutRedirect' => [
+                'controller' => 'users',
+                'action' => 'login',
+            ],
+            'authenticate' => [
+                'Form' => [
+                    'fields' => [
+                        'username' => 'USERNAME',
+                        'password' => 'ASSWORD'
+                    ]
+                ]
+            ],
+        ]);
+        //$this->loadComponent('Security');
+        //$this->loadComponent('Csrf');
     }
+	
     public function beforeFilter(Event $event)
     {
-        $this->Auth->allow(array('index', 'view', 'display'));
-    }	
+        parent::beforeFilter($event);
+        $this->viewBuilder()->layout('default');
+        $action = $this->request->params['action'];
+        $controller = $this->request->params['controller'];        
+    }
+	
+ /**
+     * Before render callback.
+     * @param \Cake\Event\Event $event The beforeRender event.
+     * @return \Cake\Network\Response|null|void
+     */
+    public function beforeRender(Event $event)
+    {
+        
+        if (!array_key_exists('_serialize', $this->viewVars) &&
+            in_array($this->response->type(), ['application/json', 'application/xml'])
+        ) {
+            $this->set('_serialize', true);
+        }
+        $title_for_layout = $this->title_for_layout;
+        if (empty($title_for_layout)) { 
+            $title_for_layout = $this->title_for_layout = $this->name;
+        }
+        $this->set(array('title_for_layout'=> __($title_for_layout)));
+    }
 }
