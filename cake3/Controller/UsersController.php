@@ -85,4 +85,17 @@ public function logout()
 		//$this->Flash->success(__('Loged out successfully'));
 		return $this->redirect($this->Auth->logout());
     }
+	
+	public function add() {
+		$users['name'] = 'Test'
+		$users['profile_details']['PARAMS'] = 'VALUE'; 
+		$users = $this->Users->newEntity($users, ['associated' => ['ProfileDetails']]);
+		$conn = ConnectionManager::get('default');
+                $conn->begin();
+		if($this->Users->save($users)) {
+			 $conn->commit();
+		}else {
+			 $conn->rollback();
+		}
+	}
 }
