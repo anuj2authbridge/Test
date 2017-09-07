@@ -98,4 +98,30 @@ public function logout()
 			 $conn->rollback();
 		}
 	}
+	
+	public function sendMail($to = null, $subject = null, $view_file = null, $attachments = array(), $data = array(), $cc = null)
+    {
+        $email = new Email('gmail');
+        $template_file = 'default';
+        $email_from = SMTP_MAIL_FROM;
+        $email_from_sign = ADMIN_EMAIL_NAME;
+        $email->viewVars(array('data' => $data));
+        $email->emailFormat('html');
+        $email->to($to);
+        $email->cc($cc);
+        $email->template($view_file, $template_file);
+        $email->from(array($email_from => $email_from_sign));
+        $email->subject($subject);	
+        if(isset($attachments) && !empty($attachments)) {
+           $email->attachments($attachments);
+        }
+        try {
+           $email->send();
+           $return = true;
+        } catch (Exception $e) {
+           $return = false;
+        }
+        
+       return true;
+    }
 }
