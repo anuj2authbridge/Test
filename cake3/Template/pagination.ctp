@@ -6,3 +6,8 @@
 <li><?php echo $this->Paginator->next('<i class="fa fa-caret-right"></i>', ['escape'=>false]); ?></li>
 </ul>
 </div>
+
+sort data by column wise
+
+
+<?php echo  $this->Paginator->sort('Companys.company_name','<span style="color:white">Name</span>',['escape'=>false]); ?>
