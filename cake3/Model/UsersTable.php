@@ -166,4 +166,53 @@ class UsersTable extends Table
         else
             return true;
     }
+	
+	
+function test()
+{
+	$query2->select(['total_initiated_case' => $query2->func()->count($query2->newExpr()
+               ->addCase(
+               $query2->newExpr()->add(['ModelName.case_initiation_flag !=' => 0]), ['ModelName.id']
+            )), 'commission_received' => $query2->func()->count($query2->newExpr()
+               ->addCase(
+               $query2->newExpr()->add(['ModelName.is_commission_received' => 1,'OtherModelName.status' => $canStatusTxt['COND']]), 'ModelName.id'
+               )), 'commission_pending' => $query2->func()->count($query2->newExpr()
+               ->addCase(
+               $query2->newExpr()->add(['ModelName.is_commission_received' => 0,'OtherModelName.status' => $canStatusTxt['COND']]), 'ModelName.id'
+            ))])
+               ->leftJoinWith('Users.ModelName')
+               ->leftJoinWith('Users.ModelName.OtherModelName', function ($q) {
+                   $canStatusTxt = Configure::read('XYZ');
+                    return $q->where(['OtherModelName.status' => $canStatusTxt['COND']]);
+                }) 
+                ->group('Companys.id')
+                ->enableAutoFields(true);
+        $query2->select(['total_completed_case' => $query2->func()->count('OtherModelName.id')])
+                ->leftJoinWith('Users.ModelName.OtherModelName', function ($q) {
+                    $canStatusTxt = Configure::read('XYZ');
+                    return $q->where(['OtherModelName.status' => $canStatusTxt['COND']]);
+                })
+                ->group('Companys.id')
+                ->enableAutoFields(true);
+        $approvedList = $this->paginate($query2, ['limit' => CP_DASHBOARD_LIMIT, 'scope' => 'approved']);
+        $query4 = $this->Companys->find()->select(['id'])->where($conditions2); 
+        $query4->select(['total_earning' => $query4->func()->sum($query4->newExpr()
+               ->addCase(
+               $query4->newExpr()->add(['ModelName.is_commission_received' => 1,'ModelName.payment_status' => 1,'MONTH(ModelName.created_on)'=>date('m'),'YEAR(ModelName.created_on)'=>date('Y')]), ['ModelName.total_price * ' . (const / 100) => 'identifier']
+            ))])
+               ->leftJoinWith('Users.ModelName')
+                ->enableAutoFields(true);
+            $otalEarningVal=$query4->toArray();
+        $totalEarning=$otalEarningVal[0]->total_earning;
 }
+}
+Paginator View
+	
+	
+	<div class="pagination_bar">                            
+                            <?php  $this->Paginator->options(['model' => 'ModelName']); echo $this->Paginator->counter('{{page}} - {{current}} of {{count}}');?>
+                            <ul class="pagination pull-right">
+                            <li><?php   echo $this->Paginator->prev('« Previous'); ?></li>
+                            <li><?php echo $this->Paginator->next('Next »'); ?></li>
+                            </ul>
+                            </div>
