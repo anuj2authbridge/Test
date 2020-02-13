@@ -17,6 +17,39 @@ class UsersController extends AppController
         $this->Auth->allow(array('login','signUp'));
     }
     
+     public function login(){
+        /* $hasher = new DefaultPasswordHasher();
+        echo $hasher->hash('auth123');
+        die(); */
+        if ($this->Auth->user()) {
+            return $this->redirect(['controller'=>'Dashboard','action'=>'index']);
+        }
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            if ($user) {
+                // By Default - Default Database
+                $session = new Session();
+                $session->write('database','default');
+                // End By Default
+                $this->loadModel('UserRoles');
+                $roles = $this->UserRoles->getUserRoles($user['USER_ID']);
+                if(!empty($roles) && count($roles) > 0){
+                    $user['ROLE_ID'] = current(array_keys($roles));
+                    $user['USER_ROLES'] = $roles;
+                    $this->Auth->setUser($user);
+                    return $this->redirect($this->Auth->redirectUrl());
+                }else{
+                    $this->Flash->error(__('Role not assigned.'));
+                    return $this->redirect(['controller'=>'users', 'action'=>'logout']);
+                }
+                
+            } else {
+                $this->Flash->error(__('Username or password is incorrect'));
+            }
+        }
+    }
+
+    
     public function changePassword()
     {
         $user =$this->Users->get($this->Auth->user('id')); 
