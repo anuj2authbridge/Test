@@ -17,7 +17,7 @@ class EmailController extends AppController {
     $email = new Email('gmail');
     $template_file = 'default';
     $email_attachments = []; //attachment absolute path not http path. ex : /var/www/html/test.txt
-    $view_file = 'ctp_file_name';
+    $view_file = 'ctp_file_name_without_extension';
     $email_to = TO_EMAIL_ID;
     $email_from = SMTP_MAIL_FROM;
     $email_from_signature = "Support Team";
