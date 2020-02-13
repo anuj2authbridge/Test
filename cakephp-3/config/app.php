@@ -422,5 +422,16 @@ return [
      */
     'Session' => [
         'defaults' => 'php',
+        'timeout'=>'120'
     ],
+    'TinyAuth' => [
+        'idColumn' => 'USER_ID', // ID Column in users table
+        'roleColumn' => 'ROLE_ID', // Foreign key for the Role ID in users table or in pivot table
+        'userColumn' => 'USER_ID', // Foreign key for the User id in pivot table. Only for multi-roles setup
+        'aliasColumn' => 'ALIAS', // Name of column in roles table holding role alias/slug
+        'rolesTable' => 'Roles', // name of Configure key holding available roles OR class name of roles table
+        'usersTable' => 'Users', // name of the Users table
+        'pivotTable' => 'UserRoles', // Should be used in multi-roles setups
+        'multiRole' => true, // true to enables multirole/HABTM authorization (requires a valid pivot table)
+    ]
 ];
